@@ -1,4 +1,4 @@
-//import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import Header from './components/Header.tsx'
 import Footer from './components/Footer.tsx'
@@ -10,9 +10,19 @@ import { Projects } from './sections/project.tsx'
 import { Contact } from './sections/contact.tsx'
 
 function App() {
+  const [isLightTheme, setIsLightTheme] = useState(
+    () => localStorage.getItem('portfolio-theme') === 'light',
+  )
+
+  useEffect(() => {
+    const theme = isLightTheme ? 'light' : 'dark'
+    document.body.dataset.theme = theme
+    localStorage.setItem('portfolio-theme', theme)
+  }, [isLightTheme])
+
   return (
     <>
-      <Header />
+      <Header isLightTheme={isLightTheme} onThemeToggle={() => setIsLightTheme(!isLightTheme)} />
       <Home />
       <About />
       <Experience />
