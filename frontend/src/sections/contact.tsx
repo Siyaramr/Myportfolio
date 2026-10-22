@@ -1,7 +1,7 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+const API_URL = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8001').replace(/\/+$/, '')
 
 type ContactStatus =
   | { type: 'idle'; message: string }
@@ -125,6 +125,15 @@ export const Contact = () => {
             required
           />
         </div>
+
+        <input
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          style={{ display: 'none' }}
+        />
 
         <button
           className="contact-form__submit"

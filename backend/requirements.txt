@@ -3,4 +3,3 @@ uvicorn[standard]
 email-validator
 slowapi
 pydantic-settings
-aiosmtplib

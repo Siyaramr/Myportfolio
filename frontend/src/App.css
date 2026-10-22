@@ -699,11 +699,25 @@ img {
 }
 
 .site-footer__contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: #a1a1aa;
   font-size: 0.85rem;
   overflow-wrap: anywhere;
   text-decoration: none;
   transition: color 160ms ease;
+}
+
+.site-footer__contact-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
 }
 
 .site-footer__group h2 {
