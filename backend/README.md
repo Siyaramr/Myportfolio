@@ -69,25 +69,24 @@ The application supports both GET and HEAD health requests at `/`. The CORS
 middleware wraps the entire ASGI app so allowed origins also receive CORS
 headers on 429 and 500 responses.
 
-The frontend is deployed separately to Vercel. Set
-`VITE_API_URL` to the actual Render backend URL (for example,
-`https://<your-render-service>.onrender.com`) in the Vercel frontend project's
-environment settings for the Production environment, then redeploy. Do not
-use `localhost` or the example URL in production. Vite embeds this value at
-build time, so changing the setting without redeploying will not update the
-site. For local development, `frontend/.env.example` uses
+The frontend is deployed separately to Vercel. Its production API URL is
+`https://myportfoliob-six.vercel.app`, configured in
+`frontend/src/sections/contact.tsx` as the production fallback. Vercel's
+Production environment can override it by setting `VITE_API_URL` to the same
+backend URL; redeploy after changing the setting because Vite embeds it at
+build time. For local development, `frontend/.env.example` uses
 `http://localhost:8000`.
 
-The production frontend origin must be included in Render's
+The frontend production origin must be included in the backend's
 `FRONTEND_ORIGINS` environment variable. Add any Vercel preview or custom
 domains as needed.
 
 ## Test the contact endpoint
 
-In PowerShell, replace the URL below with your Render service URL:
+In PowerShell, use the deployed backend URL:
 
 ```powershell
-$api = "https://your-service.onrender.com"
+$api = "https://myportfoliob-six.vercel.app"
 curl.exe -I "$api/"
 curl.exe -X POST "$api/api/contact" `
   -H "Content-Type: application/json" `
