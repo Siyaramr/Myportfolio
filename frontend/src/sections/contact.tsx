@@ -2,6 +2,9 @@ import type { FormEvent } from 'react'
 import { useState } from 'react'
 
 const API_URL = (import.meta.env.VITE_API_URL ?? '').trim().replace(/\/+$/, '')
+const REQUEST_TIMEOUT_MS = 60_000
+const WAKEUP_NOTICE_DELAY_MS = 3_000
+const WAKEUP_NOTICE = 'The server may be waking up, please wait up to a minute'
 
 type ContactStatus =
   | { type: 'idle'; message: string }
@@ -12,7 +15,7 @@ type ContactStatus =
 export const Contact = () => {
   const [status, setStatus] = useState<ContactStatus>({
     type: 'idle',
-    message: 'Your message will be sent securely.',
+    message: '',
   })
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -24,18 +27,24 @@ export const Contact = () => {
     const form = event.currentTarget
     const formData = new FormData(form)
     const url = `${API_URL}/api/contact`
+    const controller = new AbortController()
+    const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+    const wakeupNoticeId = window.setTimeout(() => {
+      setStatus({ type: 'loading', message: WAKEUP_NOTICE })
+    }, WAKEUP_NOTICE_DELAY_MS)
     let responseStatus: number | undefined
     let result: { detail?: unknown; message?: unknown } = {}
 
     try {
       if (!API_URL) {
-        throw new Error('The API URL is not configured. Set VITE_API_URL and redeploy.')
+        throw new Error('The contact service is not configured. Please try again later.')
       }
 
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Object.fromEntries(formData.entries())),
+        signal: controller.signal,
       })
       responseStatus = response.status
 
@@ -83,12 +92,17 @@ export const Contact = () => {
               ? 'Please check the name, email, and message fields and try again.'
               : responseStatus !== undefined && responseStatus >= 500
                 ? 'The server encountered an error. Please try again later.'
+              : error instanceof DOMException && error.name === 'AbortError'
+                ? 'The request timed out. The server may be waking up; please try again.'
                 : error instanceof TypeError
                   ? 'Could not reach the server. Check your connection or the server CORS configuration.'
                   : error instanceof Error
                     ? error.message
                     : 'The message could not be sent. Please try again.',
       })
+    } finally {
+      window.clearTimeout(timeoutId)
+      window.clearTimeout(wakeupNoticeId)
     }
   }
 
@@ -170,13 +184,15 @@ export const Contact = () => {
         </button>
       </form>
 
-      <p
-        className={`contact-section__note contact-section__note--${status.type}`}
-        role={status.type === 'error' ? 'alert' : 'status'}
-        aria-live={status.type === 'error' ? 'assertive' : 'polite'}
-      >
-        {status.message}
-      </p>
+      {status.message && (
+        <p
+          className={`contact-section__note contact-section__note--${status.type}`}
+          role={status.type === 'error' ? 'alert' : 'status'}
+          aria-live={status.type === 'error' ? 'assertive' : 'polite'}
+        >
+          {status.message}
+        </p>
+      )}
     </section>
   )
 }

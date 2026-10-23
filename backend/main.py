@@ -8,22 +8,23 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
+from app.config import settings
 from app.limiter import limiter
 from app.routers.contact import router as contact_router
 
-api = FastAPI()
-api.state.limiter = limiter
-api.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-api.add_middleware(SlowAPIMiddleware)
-api.include_router(contact_router, prefix="/api")
+app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+app.include_router(contact_router, prefix="/api")
 
 
-@api.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 async def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@api.exception_handler(Exception)
+@app.exception_handler(Exception)
 async def handle_unexpected_error(_request: Request, error: Exception) -> JSONResponse:
     logging.getLogger(__name__).error(
         "Unhandled API error",
@@ -36,11 +37,8 @@ async def handle_unexpected_error(_request: Request, error: Exception) -> JSONRe
 
 
 app = CORSMiddleware(
-    app=api,
-    allow_origins=[
-        "https://siyaram01.vercel.app",
-        "http://localhost:5173",
-    ],
+    app=app,
+    allow_origins=settings.allowed_frontend_origins,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
