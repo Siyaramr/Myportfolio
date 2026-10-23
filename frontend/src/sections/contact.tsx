@@ -1,7 +1,12 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 
-const API_URL = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8001').replace(/\/+$/, '')
+const API_URL = (
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD
+    ? 'https://myportfolio-backend01.vercel.app'
+    : 'http://127.0.0.1:8001')
+).replace(/\/+$/, '')
 
 type ContactStatus =
   | { type: 'idle'; message: string }

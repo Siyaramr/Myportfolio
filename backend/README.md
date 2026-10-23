@@ -8,11 +8,11 @@ From the `backend` folder, run:
 
 ```powershell
 .\venv\Scripts\Activate.ps1
-python -m uvicorn main:app --reload
+python -m uvicorn main:app --reload --port 8001
 ```
 
 The API runs at `http://127.0.0.1:8001`. The contact form sends messages to
-`POST /api/contact`.
+`POST /api/contact`; `GET /` returns `{"status":"ok"}`.
 
 ## Set up email
 
@@ -38,7 +38,21 @@ Requests are limited to five per minute per IP.
 
 Start the frontend separately from the `frontend` folder with `npm run dev`.
 Set `VITE_API_URL` in the frontend environment to the backend base URL; for
-local development, use `http://127.0.0.1:8001`.
+local development, use `http://127.0.0.1:8001`. The production frontend uses
+`https://myportfolio-backend01.vercel.app` unless `VITE_API_URL` is set.
+
+## Deploy to Vercel
+
+Keep the frontend and backend as separate Vercel projects. Set the backend
+project's Root Directory to `backend`; `api/index.py` exposes the FastAPI app
+and `vercel.json` routes requests through it. Add the SMTP settings above as
+backend environment variables in Vercel, for each environment you deploy.
+
+The API allows browser requests only from `https://siyaram01.vercel.app` and
+`http://localhost:5173`. Its contact endpoint accepts `name`, `email`, and
+`message`; `subject` is optional. The hidden `website` field is a honeypot.
+The frontend's production API URL can be overridden with `VITE_API_URL` in the
+frontend project's Vercel environment settings.
 
 ## Test the contact endpoint
 

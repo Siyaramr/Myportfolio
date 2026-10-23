@@ -19,11 +19,6 @@ class Settings(BaseSettings):
     smtp_password: str | None = None
     smtp_from_email: str | None = None
     contact_to_email: str | None = None
-    frontend_origins: str = ""
-
-    @property
-    def allowed_frontend_origins(self) -> list[str]:
-        return [origin.strip() for origin in self.frontend_origins.split(",") if origin.strip()]
 
 
 settings = Settings()
