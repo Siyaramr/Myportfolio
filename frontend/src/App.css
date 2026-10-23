@@ -691,33 +691,45 @@ img {
   gap: 12px;
 }
 
-.site-footer__name {
-  color: #f4f4f5;
-  font-size: 1.15rem;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.site-footer__contact-link {
-  display: inline-flex;
+.site-footer__social-links {
+  display: flex;
   align-items: center;
   gap: 8px;
-  color: #a1a1aa;
-  font-size: 0.85rem;
-  overflow-wrap: anywhere;
-  text-decoration: none;
-  transition: color 160ms ease;
 }
 
-.site-footer__contact-icon {
+.site-footer__social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #3f3f46;
+  border-radius: 999px;
+  color: #a1a1aa;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.site-footer__social-link svg {
   width: 16px;
   height: 16px;
-  flex: 0 0 16px;
+  fill: currentColor;
+}
+
+.site-footer__social-link:nth-child(2) svg {
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.7;
+}
+
+.site-footer__name {
+  color: #f4f4f5;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .site-footer__group h2 {
@@ -736,9 +748,15 @@ img {
 
 .site-footer__group a:hover,
 .site-footer__group a:focus-visible,
-.site-footer__contact-link:hover,
-.site-footer__contact-link:focus-visible {
+.site-footer__social-link:hover,
+.site-footer__social-link:focus-visible {
+  border-color: #4ade80;
   color: #4ade80;
+}
+
+.site-footer__social-link:focus-visible {
+  outline: 2px solid #4ade80;
+  outline-offset: 3px;
 }
 
 .site-footer__bottom {
@@ -833,9 +851,13 @@ body[data-theme='light'] .home-section__shebang,
 body[data-theme='light'] .home-section__summary,
 body[data-theme='light'] .contact-section__heading > p:last-child,
 body[data-theme='light'] .contact-section__note,
-body[data-theme='light'] .site-footer__contact-link,
+body[data-theme='light'] .site-footer__social-link,
 body[data-theme='light'] .site-footer__group a {
   color: #52525b;
+}
+
+body[data-theme='light'] .site-footer__social-link {
+  border-color: #a1a1aa;
 }
 
 body[data-theme='light'] .home-section h1 {
