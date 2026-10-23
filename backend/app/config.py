@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,7 +13,7 @@ class Settings(BaseSettings):
     )
 
     smtp_host: str | None = None
-    smtp_port: int | None = Field(default=None, ge=1, le=65535)
+    smtp_port: str | None = None
     smtp_user: str | None = None
     smtp_password: str | None = None
     smtp_from_email: str | None = None

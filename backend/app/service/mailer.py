@@ -38,29 +38,36 @@ async def send_contact_email(contact: ContactMessage) -> None:
         "SMTP_FROM_EMAIL": settings.smtp_from_email,
         "CONTACT_TO_EMAIL": settings.contact_to_email,
     }
-    missing_settings = [
-        name for name, value in required_settings.items() if not value
-    ]
-    if missing_settings:
-        missing = ", ".join(missing_settings)
+    if any(not value for value in required_settings.values()):
         raise EmailServiceError(
-            f"Contact email service is not configured. Missing settings: {missing}.",
-            503,
+            "Contact email service is not configured.",
+            500,
         )
 
     smtp_host = settings.smtp_host
-    smtp_port = settings.smtp_port
+    try:
+        smtp_port = int(settings.smtp_port)
+    except (TypeError, ValueError) as error:
+        raise EmailServiceError(
+            "Contact email service is not configured.",
+            500,
+        ) from error
     smtp_username = settings.smtp_user
     smtp_password = settings.smtp_password
     recipient = settings.contact_to_email
     sender = settings.smtp_from_email
 
     assert smtp_host is not None
-    assert smtp_port is not None
     assert smtp_username is not None
     assert smtp_password is not None
     assert recipient is not None
     assert sender is not None
+
+    if not 1 <= smtp_port <= 65535:
+        raise EmailServiceError(
+            "Contact email service is not configured.",
+            500,
+        )
 
     email = EmailMessage()
     email["From"] = sender

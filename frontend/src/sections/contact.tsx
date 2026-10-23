@@ -1,12 +1,7 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 
-const API_URL = (
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.PROD
-    ? 'https://myportfolio-backend01.vercel.app'
-    : 'http://127.0.0.1:8001')
-).replace(/\/+$/, '')
+const API_URL = (import.meta.env.VITE_API_URL ?? '').trim().replace(/\/+$/, '')
 
 type ContactStatus =
   | { type: 'idle'; message: string }
@@ -28,14 +23,21 @@ export const Contact = () => {
 
     const form = event.currentTarget
     const formData = new FormData(form)
+    const url = `${API_URL}/api/contact`
+    let responseStatus: number | undefined
+    let result: { detail?: unknown; message?: unknown } = {}
 
     try {
-      const response = await fetch(`${API_URL}/api/contact`, {
+      if (!API_URL) {
+        throw new Error('The API URL is not configured. Set VITE_API_URL and redeploy.')
+      }
+
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Object.fromEntries(formData.entries())),
       })
-      let result: { detail?: unknown; message?: unknown } = {}
+      responseStatus = response.status
 
       try {
         result = (await response.json()) as typeof result
@@ -47,9 +49,15 @@ export const Contact = () => {
 
       if (!response.ok) {
         throw new Error(
-          typeof result.detail === 'string'
-            ? result.detail
-            : 'The message could not be sent. Please try again.',
+          responseStatus === 429
+            ? 'Too many messages were sent. Please wait a minute and try again.'
+            : responseStatus === 422
+              ? 'Please check the name, email, and message fields and try again.'
+              : responseStatus >= 500
+                ? 'The server encountered an error. Please try again later.'
+                : typeof result.detail === 'string'
+                  ? result.detail
+                  : 'The message could not be sent. Please try again.',
         )
       }
 
@@ -60,14 +68,26 @@ export const Contact = () => {
       })
       form.reset()
     } catch (error) {
+      console.error('Contact form request failed', {
+        url,
+        error,
+        status: responseStatus,
+        response: result,
+      })
       setStatus({
         type: 'error',
         message:
-          error instanceof TypeError
-            ? 'Could not connect to the server. Please try again later.'
-            : error instanceof Error
-              ? error.message
-              : 'The message could not be sent. Please try again.',
+          responseStatus === 429
+            ? 'Too many messages were sent. Please wait a minute and try again.'
+            : responseStatus === 422
+              ? 'Please check the name, email, and message fields and try again.'
+              : responseStatus !== undefined && responseStatus >= 500
+                ? 'The server encountered an error. Please try again later.'
+                : error instanceof TypeError
+                  ? 'Could not reach the server. Check your connection or the server CORS configuration.'
+                  : error instanceof Error
+                    ? error.message
+                    : 'The message could not be sent. Please try again.',
       })
     }
   }
