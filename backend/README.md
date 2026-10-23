@@ -8,11 +8,13 @@ From the `backend` folder, run:
 
 ```powershell
 .\venv\Scripts\Activate.ps1
-python -m uvicorn main:app --reload --port 8000
+python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-The API runs at `http://localhost:8000`. The contact form sends messages to
+The API runs at `http://127.0.0.1:8000`. The contact form sends messages to
 `POST /api/contact`; `GET /` and `HEAD /` check API health.
+When running the frontend with Vite at `http://localhost:5173`, it connects to
+this local API by default. Keep the backend running while testing the form.
 
 ## Email configuration
 
@@ -48,15 +50,37 @@ Create a Render Web Service with `backend` as the Root Directory:
 - Start Command: `uvicorn main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"`
 - Environment variable: `PYTHON_VERSION=3.12.8`
 
+Set these environment variables in the Render dashboard before using the
+contact form:
+
+- `FRONTEND_ORIGINS`: `https://siyaram01.vercel.app,http://localhost:5173`
+- `SMTP_HOST`: `smtp.gmail.com`
+- `SMTP_PORT`: `587`
+- `SMTP_USER`: the Gmail account used to send messages
+- `SMTP_PASSWORD`: that account's Google App Password (never its regular
+  password)
+- `SMTP_FROM_EMAIL`: the sender address, normally the same Gmail account
+- `CONTACT_TO_EMAIL`: the inbox that should receive contact messages
+
+Keep SMTP credentials configured as Render environment variables, not in
+source control.
+
 The application supports both GET and HEAD health requests at `/`. The CORS
 middleware wraps the entire ASGI app so allowed origins also receive CORS
 headers on 429 and 500 responses.
 
 The frontend is deployed separately to Vercel. Set
-`VITE_API_URL=https://<your-render-service>.onrender.com` in the Vercel
-frontend project's environment settings and redeploy. Vite embeds this value
-at build time. For local development, `frontend/.env.example` uses
+`VITE_API_URL` to the actual Render backend URL (for example,
+`https://<your-render-service>.onrender.com`) in the Vercel frontend project's
+environment settings for the Production environment, then redeploy. Do not
+use `localhost` or the example URL in production. Vite embeds this value at
+build time, so changing the setting without redeploying will not update the
+site. For local development, `frontend/.env.example` uses
 `http://localhost:8000`.
+
+The production frontend origin must be included in Render's
+`FRONTEND_ORIGINS` environment variable. Add any Vercel preview or custom
+domains as needed.
 
 ## Test the contact endpoint
 

@@ -1,7 +1,11 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 
-const API_URL = (import.meta.env.VITE_API_URL ?? '').trim().replace(/\/+$/, '')
+const configuredApiUrl = (import.meta.env.VITE_API_URL ?? '').trim()
+const API_URL = (
+  configuredApiUrl || (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '')
+).replace(/\/+$/, '')
+const CONTACT_EMAIL = 'ranasiyaram6194@gmail.com'
 const REQUEST_TIMEOUT_MS = 60_000
 const WAKEUP_NOTICE_DELAY_MS = 3_000
 const WAKEUP_NOTICE = 'The server may be waking up, please wait up to a minute'
@@ -9,6 +13,7 @@ const WAKEUP_NOTICE = 'The server may be waking up, please wait up to a minute'
 type ContactStatus =
   | { type: 'idle'; message: string }
   | { type: 'loading'; message: string }
+  | { type: 'notice'; message: string }
   | { type: 'success'; message: string }
   | { type: 'error'; message: string }
 
@@ -22,10 +27,30 @@ export const Contact = () => {
     event.preventDefault()
     if (status.type === 'loading') return
 
-    setStatus({ type: 'loading', message: 'Sending your message...' })
-
     const form = event.currentTarget
     const formData = new FormData(form)
+    if (!API_URL) {
+      const subject = String(formData.get('subject') ?? '')
+      const body = [
+        `Name: ${String(formData.get('name') ?? '')}`,
+        `Email: ${String(formData.get('email') ?? '')}`,
+        '',
+        String(formData.get('message') ?? ''),
+      ].join('\n')
+      const mailtoUrl = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+
+      setStatus({
+        type: 'notice',
+        message:
+          'Your email app should open with your message. Review and send it there. If it does not open, email ' +
+          CONTACT_EMAIL,
+      })
+      window.location.href = mailtoUrl
+      return
+    }
+
+    setStatus({ type: 'loading', message: 'Sending your message...' })
+
     const url = `${API_URL}/api/contact`
     const controller = new AbortController()
     const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
@@ -36,10 +61,6 @@ export const Contact = () => {
     let result: { detail?: unknown; message?: unknown } = {}
 
     try {
-      if (!API_URL) {
-        throw new Error('The contact service is not configured. Please try again later.')
-      }
-
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -95,7 +116,9 @@ export const Contact = () => {
               : error instanceof DOMException && error.name === 'AbortError'
                 ? 'The request timed out. The server may be waking up; please try again.'
                 : error instanceof TypeError
-                  ? 'Could not reach the server. Check your connection or the server CORS configuration.'
+                  ? import.meta.env.DEV
+                    ? 'The local contact backend is not responding. Start it at http://localhost:8000, then try again.'
+                    : 'Could not reach the contact backend. Check VITE_API_URL and the backend CORS configuration.'
                   : error instanceof Error
                     ? error.message
                     : 'The message could not be sent. Please try again.',

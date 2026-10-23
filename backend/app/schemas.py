@@ -31,3 +31,5 @@ class ContactMessage(BaseModel):
     @classmethod
     def strip_message_whitespace(cls, value: str) -> str:
         return value.strip() if isinstance(value, str) else value
+
+    
