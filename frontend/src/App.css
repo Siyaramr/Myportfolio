@@ -870,26 +870,83 @@ body[data-theme='light'] .about-gallery__card {
   right: max(20px, env(safe-area-inset-right));
   bottom: max(20px, env(safe-area-inset-bottom));
   z-index: 20;
+  isolation: isolate;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
-  padding: 0 14px;
-  border: 1px solid #38bdf8;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid #3b82f6;
   border-radius: 999px;
-  color: #07111c;
-  background: #38bdf8;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
-  font-size: 0.8rem;
+  color: #dbeafe;
+  background: #101827;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 35%), 0 0 18px rgb(59 130 246 / 12%);
+  font-family: inherit;
+  font-size: 0.8125rem;
   font-weight: 700;
+  letter-spacing: 0.02em;
   text-decoration: none;
-  transition: background-color 160ms ease, transform 160ms ease;
+  transition:
+    border-color 240ms ease,
+    color 240ms ease,
+    box-shadow 240ms ease,
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sudo-button::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(110deg, #1d4ed8, #123b78);
+  content: '';
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sudo-button span {
+  position: relative;
+  z-index: 1;
 }
 
 .sudo-button:hover,
 .sudo-button:focus-visible {
-  background: #7dd3fc;
+  border-color: #60a5fa;
+  color: #fff;
+  box-shadow: 0 10px 28px rgb(0 0 0 / 40%), 0 0 22px rgb(37 99 235 / 28%);
   transform: translateY(-2px);
+}
+
+.sudo-button:hover::before,
+.sudo-button:focus-visible::before {
+  transform: scaleX(1);
+}
+
+.sudo-button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 4px;
+}
+
+.sudo-button:active {
+  border-color: #1e3a8a;
+  background: #0b1e3a;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 30%);
+  transform: translateY(0) scale(0.96);
+}
+
+.sudo-button:active::before {
+  background: #0b1e3a;
+  transform: scaleX(1);
+  transition-duration: 100ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sudo-button,
+  .sudo-button::before {
+    transition-duration: 0.01ms;
+  }
 }
 
 body[data-theme='light'] {

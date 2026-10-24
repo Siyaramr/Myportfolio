@@ -31,7 +31,7 @@ function App() {
       <Contact />
       <Footer />
       <a className="sudo-button" href="#home" aria-label="Back to home">
-        sudo !!
+        <span>sudo !!</span>
       </a>
     </>
   )
