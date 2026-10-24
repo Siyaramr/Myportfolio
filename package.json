@@ -9,5 +9,8 @@
     "build": "npm run build --workspace=portfolio",
     "lint": "npm run lint --workspace=portfolio",
     "preview": "npm run preview --workspace=portfolio"
+  },
+  "dependencies": {
+    "motion": "^14.6.0"
   }
 }
