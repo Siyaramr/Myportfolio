@@ -2,36 +2,42 @@ const SKILL_GROUPS = [
   {
     title: 'Networking and Connectivity',
     skills: [
-      'TCP/IP, DNS, and DHCP fundamentals',
-      'LAN, Wi-Fi, and internet connectivity troubleshooting',
-      'Router and ONU configuration, basic PPPoE',
-      'Wi-Fi channels, bandwidth, and optical-related issue investigation',
+      'TCP/IP, DNS, DHCP, LAN/WAN, Wi-Fi, routers, and switches',
+      'Internet connectivity troubleshooting and PPPoE',
+      'ONU and router configuration',
+      'Wi-Fi channel and bandwidth optimization, optical fault investigation',
     ],
   },
   {
-    title: 'IPTV Support',
+    title: 'IT Support and System Administration',
     skills: [
-      'IPTV troubleshooting and customer support',
-      'Set-top box configuration and testing',
-      'IPTV STB firmware upgrades and downgrades',
+      'Hardware and software troubleshooting, remote support',
+      'Windows installation and configuration, user account and access management',
+      'Patch management, data backup and recovery',
+      'Antivirus deployment, IT asset management',
+    ],
+  },
+  {
+    title: 'Linux and Cybersecurity (Learning)',
+    skills: [
+      'Red Hat Enterprise Linux (RHEL), preparing for RHCSA',
+      'Cybersecurity best practices, security patching',
     ],
   },
   {
     title: 'ERP, FinTech, and Software',
     skills: [
       'ERP and FinTech software support',
-      'BUSY accounting software and SQL queries',
-      'Software installation and configuration',
-      'User issue troubleshooting',
+      'BUSY accounting software, SQL queries',
+      'Software installation, configuration, and troubleshooting',
     ],
   },
   {
-    title: 'Technical Support',
+    title: 'IPTV and Customer Support',
     skills: [
-      'L1 technical and customer support',
-      'On-site diagnosis and troubleshooting',
-      'Clear client communication and issue escalation',
-      'Red Hat Enterprise Linux (learning), preparing for RHCSA',
+      'IPTV troubleshooting, set-top box configuration and firmware upgrade/downgrade',
+      'L1/L2 technical support, on-site diagnosis',
+      'Clear client communication, issue escalation, documentation',
     ],
   },
 ]

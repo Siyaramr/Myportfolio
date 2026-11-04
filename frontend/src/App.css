@@ -342,6 +342,7 @@ body[data-theme='light'] .about-gallery__card {
   gap: 10px;
   margin: 0;
   padding-left: 20px;
+  list-style: disc;
   color: #a1a1aa;
   line-height: 1.6;
 }
@@ -398,6 +399,7 @@ body[data-theme='light'] .about-gallery__card {
   gap: 11px;
   margin: 0;
   padding-left: 20px;
+  list-style: disc;
   color: #a1a1aa;
   line-height: 1.6;
 }
